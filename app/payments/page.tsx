@@ -82,9 +82,13 @@ const current = map.get(key) || {
     current.footage += footage
     current.amount += amount
 
-    if (entry.projects?.name) {
-      current.projects.add(entry.projects.name)
-    }
+    const projectName = Array.isArray(entry.projects)
+  ? entry.projects[0]?.name
+  : (entry.projects as any)?.name
+
+if (projectName) {
+  current.projects.add(projectName)
+}
 
     map.set(key, current)
   }
