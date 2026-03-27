@@ -1,0 +1,128 @@
+@import "tailwindcss";
+
+:root {
+  --fyber-bg: #020816;
+  --fyber-panel: rgba(8, 18, 38, 0.78);
+  --fyber-panel-2: rgba(12, 24, 48, 0.72);
+  --fyber-border: rgba(255, 255, 255, 0.1);
+  --fyber-text: #f8fbff;
+  --fyber-muted: rgba(255, 255, 255, 0.58);
+  --fyber-accent: #20c7ff;
+  --fyber-accent-2: #48ff8a;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(32, 199, 255, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(72, 255, 138, 0.08), transparent 22%),
+    linear-gradient(180deg, #031126 0%, #020816 100%);
+  color: var(--fyber-text);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: inherit;
+}
+
+.bg-fyber-bg {
+  background:
+    radial-gradient(circle at top left, rgba(32, 199, 255, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(72, 255, 138, 0.08), transparent 22%),
+    linear-gradient(180deg, #031126 0%, #020816 100%);
+}
+
+.fyber-page-header {
+  @apply mb-6;
+}
+
+.fyber-page-title {
+  @apply text-3xl font-semibold tracking-tight text-white;
+}
+
+.fyber-page-subtitle {
+  @apply mt-2 text-sm text-white/55;
+}
+
+.fyber-card {
+  background: var(--fyber-panel);
+  border: 1px solid var(--fyber-border);
+  @apply rounded-2xl backdrop-blur;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+    0 12px 40px rgba(0, 0, 0, 0.32),
+    0 0 50px rgba(0, 174, 255, 0.05);
+}
+
+.fyber-card-soft {
+  background: var(--fyber-panel-2);
+  border: 1px solid var(--fyber-border);
+  @apply rounded-2xl backdrop-blur;
+  box-shadow:
+    0 10px 35px rgba(0, 0, 0, 0.24),
+    0 0 40px rgba(0, 174, 255, 0.04);
+}
+
+.fyber-kpi-value {
+  @apply text-4xl font-semibold tracking-tight text-white;
+}
+
+.fyber-kpi-label {
+  @apply text-sm text-white/55;
+}
+
+.fyber-button-primary {
+  @apply inline-flex items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-400/15 px-4 py-2.5 text-sm font-semibold text-cyan-100 transition hover:bg-cyan-400/20;
+}
+
+.fyber-button-secondary {
+  @apply inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-white/85 transition hover:bg-white/10;
+}
+
+.fyber-table {
+  @apply w-full border-collapse;
+}
+
+.fyber-table th {
+  @apply border-b border-white/10 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.16em] text-white/45;
+}
+
+.fyber-table td {
+  @apply border-b border-white/5 px-4 py-4 text-sm text-white/80;
+}
+
+.fyber-input {
+  @apply w-full rounded-xl border border-white/10 bg-[#091427] px-4 py-3 text-white outline-none transition placeholder:text-white/30 focus:border-cyan-400/30;
+}
+
+select option {
+  background-color: #091427;
+  color: white;
+}
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Remove number input spinners - Chrome, Safari, Edge, Opera */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0;
+}
+
+/* Remove number input spinners - Firefox */
+input[type='number'] {
+  appearance: textfield !important;
+  -moz-appearance: textfield !important;
+}
