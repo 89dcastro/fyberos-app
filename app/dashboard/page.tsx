@@ -121,13 +121,17 @@ export default async function DashboardPage() {
     const footage = Number(entry.footage_installed || 0)
     const amount = footage * rate
 
-    const current = payablesMap.get(key) || {
-      id: entry.subcontractor_id,
-      name: entry.subcontractors?.company_name || 'Unknown',
-      entries: 0,
-      footage: 0,
-      amount: 0,
-    }
+    const subcontractorName = Array.isArray(entry.subcontractors)
+  ? entry.subcontractors[0]?.company_name || 'Unknown'
+  : entry.subcontractors?.company_name || 'Unknown'
+
+const current = payablesMap.get(key) || {
+  id: entry.subcontractor_id,
+  name: subcontractorName,
+  entries: 0,
+  footage: 0,
+  amount: 0,
+}
 
     current.entries += 1
     current.footage += footage
