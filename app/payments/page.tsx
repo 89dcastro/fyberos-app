@@ -62,14 +62,21 @@ export default async function PaymentsPage() {
     const footage = Number(entry.footage_installed || 0)
     const amount = footage * rate
 
-    const current = map.get(key) || {
-      subcontractorId: entry.subcontractor_id,
-      name: entry.subcontractors?.company_name || 'Unknown',
-      entries: 0,
-      footage: 0,
-      amount: 0,
-      projects: new Set(),
-    }
+    const subcontractorName =
+  Array.isArray(entry.subcontractors)
+    ? entry.subcontractors[0]?.company_name
+    : (entry.subcontractors as any)?.company_name
+
+const name = subcontractorName || 'Unknown'
+
+const current = map.get(key) || {
+  subcontractorId: entry.subcontractor_id,
+  name: name,
+  entries: 0,
+  footage: 0,
+  amount: 0,
+  projects: new Set(),
+}
 
     current.entries += 1
     current.footage += footage
