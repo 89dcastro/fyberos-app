@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import { supabase } from '../../lib/supabase'
 import StatusBadge from '../../components/ui/StatusBadge'
