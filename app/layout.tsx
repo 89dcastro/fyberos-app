@@ -6,6 +6,10 @@ import './globals.css'
 export const metadata: Metadata = {
   title: 'FyberOS',
   description: 'Operating system for fiber contractors',
+icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
 }
 
 const navItems = [
