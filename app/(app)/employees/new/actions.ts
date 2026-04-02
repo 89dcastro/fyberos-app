@@ -1,6 +1,6 @@
 'use server'
 
-import { supabase } from '../../../lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { redirect } from 'next/navigation'
 
 export async function createEmployee(formData: FormData) {
