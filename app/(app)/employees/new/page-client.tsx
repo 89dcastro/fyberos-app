@@ -29,7 +29,7 @@ export default function NewEmployeeForm({
         <div>
           <h1 className="fyber-page-title">Create Employee</h1>
           <p className="fyber-page-subtitle">
-            Add a new employee for payroll and labor tracking.
+            Add a new employee, create login access, and define payroll settings.
           </p>
         </div>
 
@@ -47,16 +47,20 @@ export default function NewEmployeeForm({
               required
               className="fyber-input"
             />
+            <div className="flex flex-col gap-1">
+  <span className="text-xs text-white/50">Job Title</span>
 
             <input
               name="position"
-              placeholder="Position (Foreman, Office, Supervisor)"
+              placeholder="Job Title (e.g. Splicer, Locator, Supervisor)"
               className="fyber-input"
             />
-
+            </div>
             <input
               name="email"
+              type="email"
               placeholder="Email"
+              required
               className="fyber-input"
             />
 
@@ -65,6 +69,31 @@ export default function NewEmployeeForm({
               placeholder="Phone"
               className="fyber-input"
             />
+
+            <input
+              name="username"
+              placeholder="Username"
+              required
+              className="fyber-input"
+            />
+
+            <input
+              name="temporary_password"
+              type="text"
+              placeholder="Temporary Password"
+              required
+              className="fyber-input"
+            />
+            <div className="flex flex-col gap-1">
+  <span className="text-xs text-white/50">System Role</span>
+
+            <select name="role" className="fyber-input" defaultValue="employee" required>
+              <option value="employee">Employee</option>
+              <option value="foreman">Foreman</option>
+              <option value="office">Office</option>
+              <option value="admin">Admin</option>
+            </select>
+            </div>
 
             <select name="branch_id" className="fyber-input" required>
               <option value="">Select Branch</option>
@@ -150,10 +179,10 @@ export default function NewEmployeeForm({
           )}
 
           <div className="rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4">
-            <p className="text-sm font-semibold text-cyan-100">Payroll Note</p>
+            <p className="text-sm font-semibold text-cyan-100">Access Setup Note</p>
             <p className="mt-2 text-sm text-white/65">
-              Employees may be paid hourly, daily, or by weekly salary. Crew assignment
-              is optional so office staff and supervisors can also be tracked in FyberOS.
+              This employee will be created with login access, a username, and a temporary
+              password. Later we can add forced password change on first login.
             </p>
           </div>
 
