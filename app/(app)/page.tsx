@@ -9,8 +9,20 @@ export default async function HomePage() {
   } = await supabase.auth.getUser()
 
   if (user) {
+  const { data: currentUser } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  const role = currentUser?.role
+
+  if (role === 'admin' || role === 'office') {
     redirect('/dashboard')
+  } else {
+    redirect('/time-tracking')
   }
+}
 
   redirect('/login')
 }

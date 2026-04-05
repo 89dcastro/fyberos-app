@@ -51,10 +51,24 @@ export async function middleware(req: NextRequest) {
   }
 
   if (user && isLoginPage) {
-    const url = req.nextUrl.clone()
+  const { data: userData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  const role = userData?.role
+
+  const url = req.nextUrl.clone()
+
+  if (role === 'admin' || role === 'office') {
     url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+  } else {
+    url.pathname = '/time-tracking'
   }
+
+  return NextResponse.redirect(url)
+}
 
   return response
 }
