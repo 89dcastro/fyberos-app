@@ -1,6 +1,8 @@
+
 import type { Metadata } from 'next'
 import Image from 'next/image'
 import Link from 'next/link'
+import LogoutButton from '@/components/logout-button'
 
 export const metadata: Metadata = {
   title: 'FyberOS',
@@ -24,10 +26,13 @@ const navItems = [
 ]
 
 export default function AppLayout({
+  
   children,
 }: Readonly<{
   children: React.ReactNode
-}>) {
+}>) 
+{
+  
   return (
     <div className="flex min-h-screen">
       {/* SIDEBAR */}
@@ -127,8 +132,8 @@ export default function AppLayout({
                 Ajalax Admin
               </div>
 
-              <div className="h-10 w-10 rounded-full border border-white/10 bg-white/10" />
-            </div>
+              <LogoutButton />
+          </div>
           </div>
         </header>
 
