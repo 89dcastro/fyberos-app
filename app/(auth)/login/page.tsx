@@ -48,8 +48,7 @@ export default function LoginPage() {
         return
       }
 
-      router.push('/dashboard')
-      router.refresh()
+      window.location.href = '/'
     } catch (err: any) {
   console.error('LOGIN ERROR:', err)
   setError(err?.message || 'Unexpected error during login')
