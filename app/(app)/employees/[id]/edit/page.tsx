@@ -1,6 +1,13 @@
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
-import { updateEmployee } from './actions'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+import {
+  updateEmployee,
+  createEmployeeAccess,
+  updateEmployeeUsername,
+  resetEmployeePassword,
+  updateEmployeeRole,
+} from './actions'
 import EditEmployeeForm from './page-client'
 
 export default async function EditEmployeePage({
@@ -25,6 +32,41 @@ export default async function EditEmployeePage({
     .from('branches')
     .select('id, name')
     .order('name')
+
+let currentUserRole: string | null = null
+
+const supabaseServer = await createSupabaseServerClient()
+const {
+  data: { user: currentAuthUser },
+} = await supabaseServer.auth.getUser()
+
+if (currentAuthUser) {
+  const { data: currentUserData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', currentAuthUser.id)
+    .maybeSingle()
+
+  currentUserRole = currentUserData?.role || null
+}
+
+  let linkedUser: {
+    id: string
+    email: string | null
+    full_name: string | null
+    role: string | null
+    username: string | null
+  } | null = null
+
+  if (employee?.user_id) {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('id, email, full_name, role, username')
+      .eq('id', employee.user_id)
+      .maybeSingle()
+
+    linkedUser = userData || null
+  }
 
   if (error) {
     return (
@@ -51,13 +93,33 @@ export default async function EditEmployeePage({
     await updateEmployee(id, formData)
   }
 
+  async function createEmployeeAccessWithId(formData: FormData) {
+    'use server'
+    await createEmployeeAccess(id, formData)
+  }
+
+  async function updateEmployeeUsernameWithId(formData: FormData) {
+    'use server'
+    await updateEmployeeUsername(id, formData)
+  }
+
+  async function resetEmployeePasswordWithId(formData: FormData) {
+    'use server'
+    await resetEmployeePassword(id, formData)
+  }
+
+  async function updateEmployeeRoleWithId(formData: FormData) {
+  'use server'
+  await updateEmployeeRole(id, formData)
+}
+
   return (
     <div className="space-y-6">
       <section className="flex justify-between">
         <div>
           <h1 className="fyber-page-title">Edit Employee</h1>
           <p className="fyber-page-subtitle">
-            Update employee information, pay settings, branch, and crew assignment.
+            Update employee information, payroll settings, branch, crew assignment, and login access.
           </p>
         </div>
 
@@ -68,9 +130,15 @@ export default async function EditEmployeePage({
 
       <EditEmployeeForm
         employee={employee}
+        linkedUser={linkedUser}
         crews={crews || []}
         branches={branches || []}
         action={updateEmployeeWithId}
+        createAccessAction={createEmployeeAccessWithId}
+        updateUsernameAction={updateEmployeeUsernameWithId}
+        resetPasswordAction={resetEmployeePasswordWithId}
+        updateRoleAction={updateEmployeeRoleWithId}
+        currentUserRole={currentUserRole}
       />
     </div>
   )

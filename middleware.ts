@@ -2,6 +2,20 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname
+
+  const isApiRoute = pathname.startsWith('/api')
+  const isLoginPage = pathname === '/login'
+  const isPublicAsset =
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/favicon.ico') ||
+    pathname.startsWith('/icon.png') ||
+    pathname.startsWith('/apple-icon.png')
+
+  if (isApiRoute || isPublicAsset) {
+    return NextResponse.next()
+  }
+
   let response = NextResponse.next({
     request: {
       headers: req.headers,
@@ -29,19 +43,6 @@ export async function middleware(req: NextRequest) {
   const {
     data: { user },
   } = await supabase.auth.getUser()
-
-  const pathname = req.nextUrl.pathname
-  const isLoginPage = pathname === '/login'
-
-  const isPublicAsset =
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/favicon.ico') ||
-    pathname.startsWith('/icon.png') ||
-    pathname.startsWith('/apple-icon.png')
-
-  if (isPublicAsset) {
-    return response
-  }
 
   if (!user && !isLoginPage) {
     const url = req.nextUrl.clone()
