@@ -177,3 +177,65 @@ export async function getRecentEntries() {
 
   return data || []
 }
+
+export async function getUnpaidDailySummary() {
+  const cookieStore = await cookies()
+  
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: () => {},
+      },
+    }
+  )
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+  return {
+    days: [],
+    totalUnpaidHours: 0,
+  }
+}
+
+  const { data, error } = await supabase
+    .from('time_entries')
+    .select('id, entry_date, total_hours, clock_out, payroll_run_id')
+    .eq('user_id', user.id)
+    .is('payroll_run_id', null)
+    .order('entry_date', { ascending: false })
+    .order('clock_in', { ascending: false })
+
+  if (error) {
+    throw new Error(error.message)
+  }
+
+  const map = new Map<string, { date: string; hours: number; hasOpen: boolean }>()
+
+  for (const entry of data || []) {
+    const date = entry.entry_date || 'No date'
+    const current = map.get(date) || {
+      date,
+      hours: 0,
+      hasOpen: false,
+    }
+    current.hours += Number(entry.total_hours || 0)
+
+    if (!entry.clock_out) {
+      current.hasOpen = true
+    }
+
+    map.set(date, current)
+  }
+const totalUnpaidHours = Array.from(map.values()).reduce((sum, day) => sum + day.hours, 0)
+
+  return {
+  days: Array.from(map.values()),
+  totalUnpaidHours,
+}
+}
