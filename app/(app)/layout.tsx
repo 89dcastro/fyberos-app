@@ -19,10 +19,12 @@ const navItems = [
   { label: 'Projects', href: '/projects' },
   { label: 'Crews', href: '/crews' },
   { label: 'Employees', href: '/employees' },
+  { label: 'Payroll', href: '/payroll' },
   { label: 'Subcontractors', href: '/subcontractors' },
   { label: 'Production', href: '/production' },
   { label: 'Reports', href: '/reports' },
   { label: 'Time Tracking', href: '/time-tracking' },
+
 ]
 
 export default function AppLayout({

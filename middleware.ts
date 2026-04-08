@@ -70,6 +70,38 @@ export async function middleware(req: NextRequest) {
   return NextResponse.redirect(url)
 }
 
+if (user) {
+  const { data: userData } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  const role = userData?.role
+
+  const adminOnlyPaths = [
+    '/dashboard',
+    '/branches',
+    '/projects',
+    '/crews',
+    '/employees',
+    '/subcontractors',
+    '/reports',
+    '/payments',
+    '/payroll',
+  ]
+
+  const isAdminOnlyPath = adminOnlyPaths.some((path) =>
+    pathname === path || pathname.startsWith(`${path}/`)
+  )
+
+  if ((role === 'employee' || role === 'foreman') && isAdminOnlyPath) {
+    const url = req.nextUrl.clone()
+    url.pathname = '/time-tracking'
+    return NextResponse.redirect(url)
+  }
+}
+
   return response
 }
 

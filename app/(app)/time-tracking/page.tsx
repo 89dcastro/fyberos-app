@@ -1,5 +1,6 @@
 import { getOpenTimeEntry, clockIn, clockOut } from './actions'
 import { getRecentEntries } from './actions'
+import LocalTime from '@/components/local-time'
 
 
 
@@ -19,7 +20,7 @@ export default async function TimeTrackingPage() {
   {openEntry ? 'Clocked In' : 'Ready to Clock In'}
 </p>
        <p className="mb-6 text-2xl font-bold text-cyan-400">
-  Clocked in at: {new Date(openEntry.clock_in).toLocaleTimeString()}
+ Clocked in at: <LocalTime value={openEntry.clock_in} />
 </p>
         <form action={clockOut}>
           <button className="rounded-2xl bg-cyan-500 px-12 py-6 text-xl font-bold text-black shadow-lg active:scale-95">
