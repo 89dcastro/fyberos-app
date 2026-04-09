@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
-import { updateTimeEntry } from './actions'
+import { updateTimeEntry, createManualTimeEntry } from './actions'
 
 export const dynamic = 'force-dynamic'
 
@@ -62,6 +62,7 @@ export default async function PayrollReviewEmployeePage({
     `)
     .eq('employee_id', employeeId)
     .eq('organization_id', currentUser?.organization_id)
+      .is('payroll_run_id', null)
     .order('entry_date', { ascending: true })
     .order('clock_in', { ascending: true })
 
@@ -94,6 +95,57 @@ export default async function PayrollReviewEmployeePage({
           </p>
         </div>
       </section>
+
+      <section className="fyber-card p-6">
+  <div className="mb-5">
+    <h2 className="text-xl font-semibold text-white">Add Manual Day</h2>
+    <p className="mt-1 text-sm text-white/45">
+      Create a manual time entry if the employee forgot to clock in or lost access.
+    </p>
+  </div>
+
+  <form action={createManualTimeEntry} className="grid gap-4 md:grid-cols-4">
+    <input type="hidden" name="employee_id" value={employeeId} />
+    <input type="hidden" name="date_from" value={dateFrom} />
+    <input type="hidden" name="date_to" value={dateTo} />
+
+    <div>
+      <label className="mb-2 block text-xs text-white/45">Date</label>
+      <input
+        type="date"
+        name="entry_date"
+        defaultValue={dateFrom || ''}
+        className="fyber-input"
+        required
+      />
+    </div>
+
+    <div>
+      <label className="mb-2 block text-xs text-white/45">Clock In</label>
+      <input
+        type="datetime-local"
+        name="clock_in"
+        className="fyber-input"
+        required
+      />
+    </div>
+
+    <div>
+      <label className="mb-2 block text-xs text-white/45">Clock Out</label>
+      <input
+        type="datetime-local"
+        name="clock_out"
+        className="fyber-input"
+      />
+    </div>
+
+    <div className="flex items-end">
+      <button className="fyber-button-primary w-full">
+        Add Manual Entry
+      </button>
+    </div>
+  </form>
+</section>
 
       <section className="fyber-card overflow-hidden">
         <div className="border-b border-white/10 px-6 py-5">

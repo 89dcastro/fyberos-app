@@ -48,12 +48,33 @@ const unpaidDays = unpaidSummary.days
           </button>
         </form>
       )}
-      <div className="mt-6 mb-4 rounded-2xl border border-cyan-400/10 bg-cyan-400/5 p-4">
-  <p className="text-sm text-white/50">Total Unpaid Hours</p>
-  <p className="mt-2 text-2xl font-bold text-cyan-300">
-    {unpaidSummary.totalUnpaidHours.toFixed(2)}h
-  </p>
-</div>
+
+      <a
+  href="/time-tracking/my-hours"
+  className="mt-6 text-sm text-cyan-300 underline"
+>
+  View My Hours
+</a>
+      <div className="mt-8 mb-6 w-full max-w-md rounded-3xl border border-cyan-400/20 bg-gradient-to-br from-cyan-400/10 to-transparent p-5 shadow-[0_0_25px_rgba(34,211,238,0.15)]">
+
+        <div className="flex items-center gap-4">
+          
+          {/* ICON */}
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-400/20 text-cyan-300">
+            ⏱
+          </div>
+
+          {/* TEXT */}
+          <div>
+            <p className="text-xs text-white/50">Total Unpaid Hours</p>
+            <p className="text-2xl font-bold text-cyan-300">
+              {unpaidSummary.totalUnpaidHours.toFixed(2)}h
+            </p>
+          </div>
+
+        </div>
+
+      </div>
      <div className="mt-10 w-full max-w-md text-left">
   <p className="mb-2 text-sm text-white/50">Unpaid Hours</p>
 

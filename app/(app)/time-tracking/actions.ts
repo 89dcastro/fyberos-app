@@ -239,3 +239,58 @@ const totalUnpaidHours = Array.from(map.values()).reduce((sum, day) => sum + day
   totalUnpaidHours,
 }
 }
+export async function getMyHoursSummary() {
+  const cookieStore = await cookies()
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: () => {},
+      },
+    }
+  )
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return {
+      todayHours: 0,
+      weekHours: 0,
+      entries: [],
+    }
+  }
+
+  const today = new Date().toISOString().split('T')[0]
+
+  const startOfWeek = new Date()
+  const day = startOfWeek.getDay()
+  const diff = day === 0 ? -6 : 1 - day
+  startOfWeek.setDate(startOfWeek.getDate() + diff)
+
+  const weekStart = startOfWeek.toISOString().split('T')[0]
+
+  const { data: entries } = await supabase
+    .from('time_entries')
+    .select('*')
+    .eq('user_id', user.id)
+    .order('entry_date', { ascending: false })
+
+  const todayHours = (entries || [])
+    .filter(e => e.entry_date === today)
+    .reduce((sum, e) => sum + Number(e.total_hours || 0), 0)
+
+  const weekHours = (entries || [])
+    .filter(e => e.entry_date >= weekStart)
+    .reduce((sum, e) => sum + Number(e.total_hours || 0), 0)
+
+  return {
+    todayHours,
+    weekHours,
+    entries: entries || [],
+  }
+}
