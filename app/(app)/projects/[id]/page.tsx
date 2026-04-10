@@ -12,7 +12,7 @@ import DailyProductionEntryCard from './DailyProductionEntryCard'
 
 async function createSegment(formData: FormData) {
   'use server'
-  //const supabase = await createSupabaseServerClient()
+  const supabase = await createSupabaseServerClient()
   const projectId = formData.get('project_id') as string
   const name = formData.get('name') as string
   const color = formData.get('color') as string
@@ -36,7 +36,7 @@ async function createSegment(formData: FormData) {
 
 async function assignCrewToSegment(formData: FormData) {
   'use server'
-
+const supabase = await createSupabaseServerClient()
   const projectId = formData.get('project_id') as string
   const segmentId = formData.get('segment_id') as string
   const crewId = formData.get('crew_id') as string
@@ -56,7 +56,7 @@ async function assignCrewToSegment(formData: FormData) {
 
 async function createDailyEntry(formData: FormData) {
   'use server'
-
+const supabase = await createSupabaseServerClient()
   const projectId = formData.get('project_id') as string
   const segmentId = formData.get('segment_id') as string
   const crewId = formData.get('crew_id') as string
