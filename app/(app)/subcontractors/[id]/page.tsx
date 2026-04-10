@@ -11,7 +11,7 @@ import SubcontractorProductionSummary from './SubcontractorProductionSummary'
 // ================================
 // PAGE
 // ================================
-const supabase = await createSupabaseServerClient()
+
 export default async function SubcontractorDetailPage({
   params,
   searchParams,
@@ -19,6 +19,7 @@ export default async function SubcontractorDetailPage({
   params: Promise<{ id: string }>
   searchParams?: Promise<{ from?: string; to?: string }>
 }) {
+  const supabase = await createSupabaseServerClient()
   const { id } = await params
   const resolvedSearchParams = (await searchParams) || {}
 
