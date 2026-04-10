@@ -1,8 +1,9 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { createCrew } from './actions'
 
 export default async function NewCrewPage() {
+  const supabase = await createSupabaseServerClient()
   const { data: branches } = await supabase
     .from('branches')
     .select('id, name')

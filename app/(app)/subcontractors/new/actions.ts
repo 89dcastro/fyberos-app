@@ -1,9 +1,13 @@
 'use server'
 
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 import { redirect } from 'next/navigation'
 
 export async function createSubcontractor(formData: FormData) {
+  const supabase = await createSupabaseServerClient()
+
+
   const company_name = String(formData.get('company_name') || '').trim()
   const contact_name = String(formData.get('contact_name') || '').trim()
   const email = String(formData.get('email') || '').trim()

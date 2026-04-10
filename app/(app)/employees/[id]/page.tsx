@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import StatusBadge from '@/components/ui/StatusBadge'
 
 export default async function EmployeeDetailPage({
@@ -8,7 +8,7 @@ export default async function EmployeeDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-
+const supabase = await createSupabaseServerClient()
   const { data: employee, error } = await supabase
     .from('employees')
     .select(`

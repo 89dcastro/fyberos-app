@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { updateSubcontractor } from './actions'
 
 export default async function EditSubcontractorPage({
@@ -8,7 +8,7 @@ export default async function EditSubcontractorPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-
+  const supabase = await createSupabaseServerClient()
   const { data: subcontractor, error } = await supabase
     .from('subcontractors')
     .select('*')

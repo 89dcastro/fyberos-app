@@ -1,8 +1,9 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import StatusBadge from '@/components/ui/StatusBadge'
 
 export default async function ProjectsPage() {
+  const supabase = await createSupabaseServerClient()
   const { data: projects, error } = await supabase
     .from('projects')
     .select(`

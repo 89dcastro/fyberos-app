@@ -1,7 +1,9 @@
 'use server'
 
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 import { revalidatePath } from 'next/cache'
+
 
 export async function generateSubcontractorPayment({
   subcontractorId,
@@ -13,6 +15,7 @@ export async function generateSubcontractorPayment({
   toDate: string
 }) {
   // 1. get unpaid entries
+  const supabase = await createSupabaseServerClient()
   const { data: entries, error: entriesError } = await supabase
     .from('subcontractor_daily_entries')
     .select('*')

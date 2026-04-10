@@ -1,8 +1,11 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 import StatusBadge from '@/components/ui/StatusBadge'
 
 export default async function SubcontractorsPage() {
+  const supabase = await createSupabaseServerClient()
+
   const { data: subcontractors, error } = await supabase
     .from('subcontractors')
     .select('*')

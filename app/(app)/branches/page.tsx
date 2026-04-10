@@ -1,8 +1,9 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import StatusBadge from '@/components/ui/StatusBadge'
 
 export default async function BranchesPage() {
+  const supabase = await createSupabaseServerClient()
   const { data: branches, error } = await supabase
     .from('branches')
     .select(`

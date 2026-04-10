@@ -1,14 +1,15 @@
 'use client'
 
 import { useState, FormEvent } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 type DailyPhotoUploadProps = {
   dailyEntryId: string
   projectId: string
 }
-
+const supabase = await createSupabaseServerClient()
 export default function DailyPhotoUpload({
+  
   dailyEntryId,
   projectId,
 }: DailyPhotoUploadProps) {

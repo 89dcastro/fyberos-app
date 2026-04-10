@@ -1,9 +1,11 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 
 export async function assignSubcontractorToSegment(formData: FormData) {
+  const supabase = await createSupabaseServerClient()
   const projectId = formData.get('project_id') as string
   const segmentId = formData.get('segment_id') as string
   const subcontractorId = formData.get('subcontractor_id') as string

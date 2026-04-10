@@ -1,9 +1,10 @@
 export const dynamic = 'force-dynamic'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import StatusBadge from '@/components/ui/StatusBadge'
 
 export default async function EmployeesPage() {
+  const supabase = await createSupabaseServerClient()
   const { data: employees } = await supabase
     .from('employees')
     .select(`

@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 import { revalidatePath } from 'next/cache'
 import DailyPhotoUpload from './DailyPhotoUpload'
 import CopyDailyReportButton from './CopyDailyReportButton'
@@ -8,9 +9,10 @@ import StatusBadge from '@/components/ui/StatusBadge'
 import { assignSubcontractorToSegment } from './assign-subcontractor/actions'
 import DailyProductionEntryCard from './DailyProductionEntryCard'
 
+
 async function createSegment(formData: FormData) {
   'use server'
-
+  //const supabase = await createSupabaseServerClient()
   const projectId = formData.get('project_id') as string
   const name = formData.get('name') as string
   const color = formData.get('color') as string
@@ -92,6 +94,7 @@ export default async function ProjectPage({
   // ================================
   // QUERIES
   // ================================
+  const supabase = await createSupabaseServerClient()
   const { data: project, error: projectError } = await supabase
     .from('projects')
     .select(`

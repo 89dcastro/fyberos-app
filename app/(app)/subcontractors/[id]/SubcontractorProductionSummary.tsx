@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 import SubcontractorGeneratePayment from './SubcontractorGeneratePayment'
 
 type Props = {
@@ -9,12 +10,13 @@ type Props = {
   initialFrom: string
   initialTo: string
 }
-
+const supabase = await createSupabaseServerClient()
 export default function SubcontractorProductionSummary({
   subcontractorId,
   initialFrom,
   initialTo,
 }: Props) {
+  
   const [fromDate, setFromDate] = useState(initialFrom)
   const [toDate, setToDate] = useState(initialTo)
   const [loading, setLoading] = useState(false)

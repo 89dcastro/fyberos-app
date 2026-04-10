@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 import { updateProject } from './actions'
 
 export default async function EditProjectPage({
@@ -8,6 +9,9 @@ export default async function EditProjectPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
+
+  const supabase = await createSupabaseServerClient()
+
 
   const { data: project, error } = await supabase
     .from('projects')

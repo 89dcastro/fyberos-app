@@ -1,9 +1,10 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 
 
 export default async function DashboardPage() {
+  const supabase = await createSupabaseServerClient()
     const today = new Date().toISOString().split('T')[0]
 
   const { data: todayCrewEntries } = await supabase

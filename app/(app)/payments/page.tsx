@@ -1,10 +1,11 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 
 export default async function PaymentsPage() {
   // ================================
   // GET ALL OPEN PRODUCTION
   // ================================
+  const supabase = await createSupabaseServerClient()
   const { data: entries } = await supabase
     .from('subcontractor_daily_entries')
     .select(`

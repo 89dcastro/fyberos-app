@@ -2,7 +2,8 @@
 // IMPORTS
 // ================================
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
+
 import StatusBadge from '@/components/ui/StatusBadge'
 import SubcontractorProductionSummary from './SubcontractorProductionSummary'
 
@@ -10,6 +11,7 @@ import SubcontractorProductionSummary from './SubcontractorProductionSummary'
 // ================================
 // PAGE
 // ================================
+const supabase = await createSupabaseServerClient()
 export default async function SubcontractorDetailPage({
   params,
   searchParams,

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { updateCrew } from './actions'
 
 export default async function EditCrewPage({
@@ -8,7 +8,7 @@ export default async function EditCrewPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-
+const supabase = await createSupabaseServerClient()
   const { data: crew, error } = await supabase
     .from('crews')
     .select('*')

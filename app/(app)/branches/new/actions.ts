@@ -1,9 +1,10 @@
 'use server'
 
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 
 export async function createBranch(formData: FormData) {
+  const supabase = await createSupabaseServerClient()
   const name = String(formData.get('name') || '').trim()
   const code = String(formData.get('code') || '').trim()
   const state = String(formData.get('state') || '').trim()

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import StatusBadge from '@/components/ui/StatusBadge'
 
 export default async function CrewDetailPage({
@@ -8,7 +8,7 @@ export default async function CrewDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-
+  const supabase = await createSupabaseServerClient()
   const { data: crew, error: crewError } = await supabase
     .from('crews')
     .select(`

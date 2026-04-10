@@ -15,6 +15,7 @@ export default async function EditEmployeePage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  const supabase = await createSupabaseServerClient()
   const { id } = await params
 
   const { data: employee, error } = await supabase

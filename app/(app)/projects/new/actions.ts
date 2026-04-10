@@ -1,9 +1,10 @@
 'use server'
 
-import { supabase } from '@/lib/supabase'
+import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { redirect } from 'next/navigation'
 
 export async function createProject(formData: FormData) {
+  const supabase = await createSupabaseServerClient()
   const name = String(formData.get('name') || '').trim()
   const projectNumber = String(formData.get('project_number') || '').trim()
   const client = String(formData.get('client') || '').trim()
