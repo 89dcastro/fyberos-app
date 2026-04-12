@@ -35,6 +35,10 @@ export default async function NewInvoicePage({
   if (!project) {
     throw new Error('Project not found.')
   }
+  const clientName =
+  Array.isArray(project.client)
+    ? project.client[0]?.company_name
+    : (project.client as any)?.company_name
 
   const { data: billingItems, error: billingItemsError } = await supabase
     .from('project_billing_items')
@@ -124,10 +128,8 @@ export default async function NewInvoicePage({
           <div>
             <p className="text-sm text-white/45">Client</p>
             <p className="mt-1 text-lg font-semibold text-white">
-             {Array.isArray(project.client)
-  ? project.client[0]?.company_name || 'No client assigned'
-  : project.client?.company_name || 'No client assigned'}
-            </p>
+  {clientName || 'No client assigned'}
+</p>
           </div>
         </div>
       </section>
