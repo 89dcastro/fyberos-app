@@ -39,6 +39,14 @@ type Props = {
   subcontractors: Subcontractor[]
   segmentCrews: SegmentCrew[]
   segmentSubcontractors: SegmentSubcontractor[]
+  billingItems: BillingItem[]
+}
+
+type BillingItem = {
+  id: string
+  item_name: string
+  unit_label: string
+  unit_price?: number | string
 }
 
 export default function DailyProductionEntryCard({
@@ -47,6 +55,7 @@ export default function DailyProductionEntryCard({
   segments,
   crews,
   subcontractors,
+  billingItems,
   segmentCrews,
   segmentSubcontractors,
 }: Props) {
@@ -207,6 +216,48 @@ export default function DailyProductionEntryCard({
             className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-white/30 focus:border-cyan-400/30"
           />
         </div>
+
+                {billingItems.length > 0 && (
+          <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
+            <p className="mb-3 text-sm font-semibold text-white">
+              Production Quantities by Billing Item
+            </p>
+            <div className="space-y-3">
+              {billingItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="grid gap-3 md:grid-cols-[1.4fr_0.8fr_1fr]"
+                >
+                  <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/80">
+                    <p className="font-medium text-white">{item.item_name}</p>
+                    <p className="mt-1 text-xs text-white/45">
+                      Unit: {item.unit_label}
+                    </p>
+                  </div>
+
+                  <input
+                    type="hidden"
+                    name="billing_item_id[]"
+                    value={item.id}
+                  />
+
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    name="billing_item_quantity[]"
+                    placeholder="0"
+                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none placeholder:text-white/30 focus:border-cyan-400/30"
+                  />
+
+                  <div className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/55">
+                    {item.unit_label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div>
           <label className="mb-2 block text-sm font-medium text-white/80">

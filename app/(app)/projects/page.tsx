@@ -10,6 +10,9 @@ export default async function ProjectsPage() {
       *,
       branch:branch_id (
         name
+      ),
+      client:client_id (
+        company_name
       )
     `)
     .order('created_at', { ascending: false })
@@ -83,7 +86,7 @@ export default async function ProjectsPage() {
                       </div>
                     </td>
 
-                    <td>{project.client || 'N/A'}</td>
+                    <td>{project.client?.company_name || 'N/A'}</td>
                     <td>{project.branch?.name || '-'}</td>
                     <td>{project.location || 'N/A'}</td>
                     <td>{project.total_footage || 0} ft</td>

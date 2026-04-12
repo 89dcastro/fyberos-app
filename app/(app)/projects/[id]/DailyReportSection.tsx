@@ -75,6 +75,14 @@ export default function DailyReportSection({
       })
   }, [combinedEntries, selectedReportDate])
 
+    const fullHistoryEntries = useMemo(() => {
+    return [...combinedEntries].sort((a, b) => {
+      const aTime = a.created_at ? new Date(a.created_at).getTime() : 0
+      const bTime = b.created_at ? new Date(b.created_at).getTime() : 0
+      return bTime - aTime
+    })
+  }, [combinedEntries])
+
   const reportTotalFootage = useMemo(() => {
     return reportEntries.reduce((sum, entry) => {
       return sum + (entry.footage_installed || 0)
@@ -142,17 +150,17 @@ export default function DailyReportSection({
         <div className="mb-5">
           <h2 className="text-xl font-semibold text-white">Daily Production History</h2>
           <p className="mt-1 text-sm text-white/45">
-            Review only the entries for the selected date.
+            Review the full production history for this project across all dates.
           </p>
         </div>
 
-        {reportEntries.length === 0 ? (
+                {fullHistoryEntries.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/60">
-            No daily entries for this date.
+            No daily production history yet.
           </div>
         ) : (
           <div className="grid gap-5">
-            {reportEntries.map((entry) => {
+            {fullHistoryEntries.map((entry) => {
               const entryPhotos =
                 entry.entry_type === 'crew'
                   ? entry.daily_entry_photos || []

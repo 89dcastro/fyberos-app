@@ -40,11 +40,11 @@ const supabase = await createSupabaseServerClient()
   const projectId = formData.get('project_id') as string
   const segmentId = formData.get('segment_id') as string
   const crewId = formData.get('crew_id') as string
-
   const { error } = await supabase.from('segment_crews').insert({
     segment_id: segmentId,
     crew_id: crewId,
   })
+    
 
   if (error) {
     console.error('Error assigning crew:', error.message)
@@ -54,17 +54,47 @@ const supabase = await createSupabaseServerClient()
   revalidatePath(`/projects/${projectId}`)
 }
 
+async function getCurrentOrganizationId() {
+  const supabase = await createSupabaseServerClient()
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (authError || !user) {
+    throw new Error('Unable to identify the current user.')
+  }
+
+  const { data: userRow, error: userError } = await supabase
+    .from('users')
+    .select('organization_id')
+    .eq('id', user.id)
+    .maybeSingle()
+
+  if (userError) {
+    throw new Error(userError.message)
+  }
+
+  if (!userRow?.organization_id) {
+    throw new Error('No organization was found for the current user.')
+  }
+
+  return userRow.organization_id as string
+}
+
 async function createDailyEntry(formData: FormData) {
   'use server'
-const supabase = await createSupabaseServerClient()
+
+  const supabase = await createSupabaseServerClient()
+  const organizationId = await getCurrentOrganizationId()
+
   const projectId = formData.get('project_id') as string
   const segmentId = formData.get('segment_id') as string
   const crewId = formData.get('crew_id') as string
   const workDate = formData.get('work_date') as string
   const footageInstalled = formData.get('footage_installed') as string
   const notes = formData.get('notes') as string
-
-  const organizationId = '6cd0a407-cde7-49d7-b57a-d4c8c9b58d0b'
 
   const { error } = await supabase.from('daily_entries').insert({
     organization_id: organizationId,
@@ -102,10 +132,15 @@ export default async function ProjectPage({
       branch:branch_id (
         id,
         name
-      )
+      ),
+      client:client_id (
+      company_name
+    )
     `)
     .eq('id', id)
     .maybeSingle()
+
+    
 
   if (projectError) {
     return (
@@ -125,6 +160,28 @@ export default async function ProjectPage({
         </p>
       </div>
     )
+  }
+
+  const { data: billingItems, error: billingItemsError } = await supabase
+    .from('project_billing_items')
+    .select('id, item_name, unit_label, unit_price, sort_order, is_active')
+    .eq('project_id', id)
+    .eq('is_active', true)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
+
+  if (billingItemsError) {
+    throw new Error(billingItemsError.message)
+  }
+
+    const { data: customerInvoices, error: customerInvoicesError } = await supabase
+    .from('customer_invoices')
+    .select('id, invoice_number, invoice_date, status, total')
+    .eq('project_id', id)
+    .order('created_at', { ascending: false })
+
+  if (customerInvoicesError) {
+    throw new Error(customerInvoicesError.message)
   }
 
   const { data: segments, error: segmentsError } = await supabase
@@ -314,7 +371,7 @@ const totalLoggedFootage = crewLoggedFootage + subcontractorLoggedFootage
 
               <div className="mt-5 grid gap-3 text-sm text-white/75">
                 <p><span className="text-white/45">Project Number:</span> {project.project_number || 'N/A'}</p>
-                <p><span className="text-white/45">Client:</span> {project.client || 'N/A'}</p>
+                <p><span className="text-white/45">Client:</span> {project.client?.company_name || 'N/A'}</p>
                 <p><span className="text-white/45">Branch:</span> {project.branch?.name || 'N/A'}</p>
                 <p><span className="text-white/45">Location:</span> {project.location || 'N/A'}</p>
                 <div className="flex items-center gap-2 text-sm text-white/75">
@@ -360,6 +417,8 @@ const totalLoggedFootage = crewLoggedFootage + subcontractorLoggedFootage
             Project Summary
           </p>
 
+                
+
           <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
             <SummaryMiniCard label="Total Footage" value={`${projectTotalFootage} ft`} />
             <SummaryMiniCard label="Logged So Far" value={`${totalLoggedFootage} ft`} />
@@ -367,6 +426,96 @@ const totalLoggedFootage = crewLoggedFootage + subcontractorLoggedFootage
             <SummaryMiniCard label="Percent Complete" value={`${percentComplete}%`} />
           </div>
         </div>
+      </section>
+
+      <section className="fyber-card p-6">
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-white">Project Billing Items</h2>
+            <p className="mt-1 text-sm text-white/45">
+              Line items and unit pricing configured for customer invoicing.
+            </p>
+          </div>
+
+          <Link
+            href={`/projects/${id}/edit`}
+            className="fyber-button-secondary"
+          >
+            Edit Billing
+          </Link>
+        </div>
+
+        {!billingItems || billingItems.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/60">
+            No billing items have been added to this project yet.
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {billingItems.map((item: any) => (
+              <div
+                key={item.id}
+                className="rounded-2xl border border-white/10 bg-white/5 p-4"
+              >
+                <div className="grid gap-3 text-sm text-white/75 md:grid-cols-3">
+                  <p>
+                    <span className="text-white/45">Item:</span> {item.item_name}
+                  </p>
+                  <p>
+                    <span className="text-white/45">Unit:</span> {item.unit_label}
+                  </p>
+                  <p>
+                    <span className="text-white/45">Unit Price:</span>{' '}
+                    ${Number(item.unit_price || 0).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="fyber-card p-6">
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold text-white">Customer Invoices</h2>
+            <p className="mt-1 text-sm text-white/45">
+              Generate and manage invoices for this project.
+            </p>
+          </div>
+
+          <Link
+            href={`/projects/${id}/invoices/new`}
+            className="fyber-button-primary"
+          >
+            Generate Invoice
+          </Link>
+        </div>
+
+        {!customerInvoices || customerInvoices.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-5 text-sm text-white/60">
+            No invoices created yet.
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {customerInvoices.map((invoice: any) => (
+              <Link
+                key={invoice.id}
+                href={`/projects/${id}/invoices/${invoice.id}`}
+                className="rounded-2xl border border-white/10 bg-white/5 p-4 transition hover:border-cyan-400/20 hover:bg-white/[0.07]"
+              >
+                <div className="grid gap-3 text-sm text-white/75 md:grid-cols-4">
+                  <p><span className="text-white/45">Invoice:</span> {invoice.invoice_number}</p>
+                  <p><span className="text-white/45">Date:</span> {invoice.invoice_date}</p>
+                  <p><span className="text-white/45">Status:</span> {invoice.status}</p>
+                  <p><span className="text-white/45">Total:</span> ${Number(invoice.total || 0).toFixed(2)}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="fyber-card p-6">
@@ -398,13 +547,23 @@ const totalLoggedFootage = crewLoggedFootage + subcontractorLoggedFootage
               const assignedSubcontractors =
                 assignmentsBySegmentId.get(segment.id) ?? []
 
-              const segmentLoggedFootage =
+              const crewSegmentFootage =
                 dailyEntries?.reduce((sum: number, entry: any) => {
                   if (entry.segment_id === segment.id) {
-                    return sum + (entry.footage_installed || 0)
+                    return sum + Number(entry.footage_installed || 0)
                   }
                   return sum
                 }, 0) || 0
+
+              const subcontractorSegmentFootage =
+                subcontractorDailyEntries?.reduce((sum: number, entry: any) => {
+                  if (entry.segment_id === segment.id) {
+                    return sum + Number(entry.footage_installed || 0)
+                  }
+                  return sum
+                }, 0) || 0
+
+              const segmentLoggedFootage = crewSegmentFootage + subcontractorSegmentFootage
 
               const segmentEstimatedFootage = segment.estimated_footage || 0
 
@@ -643,6 +802,7 @@ const totalLoggedFootage = crewLoggedFootage + subcontractorLoggedFootage
             segments={segments || []}
             crews={crews || []}
             subcontractors={subcontractors || []}
+            billingItems={billingItems || []}
             segmentCrews={(segmentCrews || []).map((item: any) => ({
               segment_id: item.segment_id,
               crew_id: item.crew_id,

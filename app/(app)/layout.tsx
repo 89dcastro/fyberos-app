@@ -17,6 +17,8 @@ const navItems = [
   { label: 'Dashboard', href: '/dashboard' },
   { label: 'Branches', href: '/branches' },
   { label: 'Projects', href: '/projects' },
+  { label: 'Clients', href: '/clients' },
+  { label: 'Invoices', href: '/invoices' },
   { label: 'Crews', href: '/crews' },
   { label: 'Employees', href: '/employees' },
   { label: 'Payroll', href: '/payroll' },

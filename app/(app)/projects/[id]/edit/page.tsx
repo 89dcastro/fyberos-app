@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
-
+import ProjectBillingItemsEditor from './ProjectBillingItemsEditor'
 import { updateProject } from './actions'
 
 export default async function EditProjectPage({
@@ -23,6 +23,18 @@ export default async function EditProjectPage({
     .from('branches')
     .select('id, name')
     .order('name')
+
+  const { data: clients } = await supabase
+  .from('clients')
+  .select('id, company_name')
+  .order('company_name')
+
+    const { data: billingItems } = await supabase
+    .from('project_billing_items')
+    .select('id, item_name, unit_label, unit_price, sort_order')
+    .eq('project_id', id)
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true })
 
   if (error) {
     return (
@@ -92,13 +104,19 @@ export default async function EditProjectPage({
               className="fyber-input"
             />
 
-            <input
-              name="client"
-              type="text"
-              defaultValue={project.client || ''}
-              placeholder="Client"
+            <select
+              name="client_id"
+              defaultValue={project.client_id || ''}
               className="fyber-input"
-            />
+              required
+            >
+              <option value="">Select client</option>
+              {clients?.map((client: any) => (
+                <option key={client.id} value={client.id}>
+                  {client.company_name}
+                </option>
+              ))}
+            </select>
 
             <input
               name="location"
@@ -142,6 +160,17 @@ export default async function EditProjectPage({
               <option value="completed">Completed</option>
             </select>
           </div>
+
+          <ProjectBillingItemsEditor
+            initialItems={
+              (billingItems || []).map((item: any) => ({
+                id: item.id,
+                item_name: item.item_name || '',
+                unit_label: item.unit_label || '',
+                unit_price: String(item.unit_price ?? ''),
+              }))
+            }
+          />
 
           <div className="flex flex-wrap items-center gap-3">
             <button type="submit" className="fyber-button-primary">

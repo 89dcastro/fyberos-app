@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { createProject } from './actions'
+import ProjectBillingItemsEditor from './ProjectBillingItemsEditor'
 
 export default async function NewProjectPage() {
   const supabase = await createSupabaseServerClient()
@@ -8,6 +9,12 @@ export default async function NewProjectPage() {
     .from('branches')
     .select('id, name')
     .order('name')
+
+  const { data: clients } = await supabase
+  .from('clients')
+  .select('id, company_name')
+  .eq('status', 'active')
+  .order('company_name')
 
   return (
     <div className="space-y-6">
@@ -66,13 +73,20 @@ export default async function NewProjectPage() {
               <label htmlFor="client" className="mb-2 block text-sm font-medium text-white/80">
                 Client
               </label>
-              <input
-                id="client"
-                name="client"
-                type="text"
-                placeholder="Pauley Construction"
+              <select
+                id="client_id"
+                name="client_id"
+                defaultValue=""
                 className="fyber-input"
-              />
+                required
+              >
+                <option value="">Select client</option>
+                {clients?.map((client: any) => (
+                  <option key={client.id} value={client.id}>
+                    {client.company_name}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -147,6 +161,8 @@ export default async function NewProjectPage() {
               by office, region, or division.
             </p>
           </div>
+          
+          <ProjectBillingItemsEditor initialItems={[]} />
 
           <div className="flex flex-wrap items-center gap-3">
             <button type="submit" className="fyber-button-primary">
