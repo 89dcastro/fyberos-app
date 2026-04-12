@@ -92,7 +92,7 @@ export default function DashboardCharts({
                   borderRadius: '16px',
                   color: 'white',
                 }}
-                formatter={(value: number) => [`${Number(value).toLocaleString()} ft`, 'Production']}
+                formatter={(value) => [`${Number(value ?? 0).toLocaleString()} ft`, 'Production']}
                 labelFormatter={(label) => shortDate(String(label))}
               />
               <Area
@@ -146,7 +146,7 @@ export default function DashboardCharts({
                   borderRadius: '16px',
                   color: 'white',
                 }}
-                formatter={(value: number) => [formatCurrency(Number(value)), 'Invoiced']}
+                formatter={(value) => [formatCurrency(Number(value ?? 0)), 'Invoiced']}
               />
               <Bar dataKey="invoiced" radius={[8, 8, 0, 0]} fill="#4ade80" />
             </BarChart>
