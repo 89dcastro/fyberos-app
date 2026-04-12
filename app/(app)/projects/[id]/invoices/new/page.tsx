@@ -3,7 +3,7 @@ import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { saveCustomerInvoice } from './actions'
 
 function sumNumeric(values: Array<number | string | null | undefined>) {
-  return values.reduce((sum, value) => sum + Number(value || 0), 0)
+  return values.reduce<number>((sum, value) => sum + Number(value ?? 0), 0)
 }
 
 export default async function NewInvoicePage({
