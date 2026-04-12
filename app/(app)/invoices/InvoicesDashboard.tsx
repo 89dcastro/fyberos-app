@@ -127,7 +127,7 @@ export default function InvoicesDashboard({
                   borderRadius: '16px',
                   color: 'white',
                 }}
-                formatter={(value: number) => formatCurrency(Number(value))}
+                formatter={(value) => formatCurrency(Number(value ?? 0))}
               />
               <Area
                 type="monotone"
@@ -226,7 +226,7 @@ export default function InvoicesDashboard({
                     borderRadius: '16px',
                     color: 'white',
                   }}
-                  formatter={(value: number) => formatCurrency(Number(value))}
+                  formatter={(value) => formatCurrency(Number(value ?? 0))}
                 />
                 <Bar dataKey="invoiced" radius={[8, 8, 0, 0]} fill="#3b82f6" />
                 <Bar dataKey="outstanding" radius={[8, 8, 0, 0]} fill="#facc15" />
