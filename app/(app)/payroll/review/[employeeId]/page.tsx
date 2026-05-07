@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
 import { updateTimeEntry, createManualTimeEntry } from './actions'
+import LocalDateTimeInput from '@/components/local-date-time-input'
 
 export const dynamic = 'force-dynamic'
 
@@ -196,20 +197,18 @@ const isPaidLocked = payrollRun?.status === 'paid'
 
                   <div>
                     <label className="mb-2 block text-xs text-white/45">Clock In</label>
-                    <input
-                      type="datetime-local"
+                    <LocalDateTimeInput
                       name="clock_in"
-                      defaultValue={entry.clock_in ? toDateTimeLocal(entry.clock_in) : ''}
+                      value={entry.clock_in}
                       className="fyber-input"
                     />
                   </div>
 
                   <div>
                     <label className="mb-2 block text-xs text-white/45">Clock Out</label>
-                    <input
-                      type="datetime-local"
+                    <LocalDateTimeInput
                       name="clock_out"
-                      defaultValue={entry.clock_out ? toDateTimeLocal(entry.clock_out) : ''}
+                      value={entry.clock_out}
                       className="fyber-input"
                     />
                   </div>
@@ -239,15 +238,3 @@ const isPaidLocked = payrollRun?.status === 'paid'
   )
 }
 
-function toDateTimeLocal(value: string) {
-  const date = new Date(value)
-  const pad = (n: number) => String(n).padStart(2, '0')
-
-  const year = date.getFullYear()
-  const month = pad(date.getMonth() + 1)
-  const day = pad(date.getDate())
-  const hours = pad(date.getHours())
-  const minutes = pad(date.getMinutes())
-
-  return `${year}-${month}-${day}T${hours}:${minutes}`
-}

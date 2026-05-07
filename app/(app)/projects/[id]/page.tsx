@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { createSupabaseServerClient } from '@/lib/supabase-server'
-
+import { redirect } from 'next/navigation'
+import DeleteSegmentButton from '@/components/delete-segment-button'
 import { revalidatePath } from 'next/cache'
 import DailyPhotoUpload from './DailyPhotoUpload'
 import CopyDailyReportButton from './CopyDailyReportButton'
@@ -10,6 +11,7 @@ import { assignSubcontractorToSegment } from './assign-subcontractor/actions'
 import DailyProductionEntryCard from './DailyProductionEntryCard'
 
 
+
 async function createSegment(formData: FormData) {
   'use server'
   const supabase = await createSupabaseServerClient()
@@ -17,6 +19,25 @@ async function createSegment(formData: FormData) {
   const name = formData.get('name') as string
   const color = formData.get('color') as string
   const estimatedFootage = formData.get('estimated_footage') as string
+
+  if (!name) {
+  throw new Error('Segment name is required.')
+}
+
+  const { data: existingSegment, error: existingSegmentError } = await supabase
+  .from('project_segments')
+  .select('id')
+  .eq('project_id', projectId)
+  .ilike('name', String(name).trim())
+  .limit(1)
+
+if (existingSegmentError) {
+  throw new Error(existingSegmentError.message)
+}
+
+if (existingSegment && existingSegment.length > 0) {
+  redirect(`/projects/${projectId}?segmentError=duplicate`)
+}
 
   const { error } = await supabase.from('project_segments').insert({
     project_id: projectId,
@@ -32,6 +53,30 @@ async function createSegment(formData: FormData) {
   }
 
   revalidatePath(`/projects/${projectId}`)
+}
+
+async function deleteSegment(formData: FormData) {
+  'use server'
+
+  const supabase = await createSupabaseServerClient()
+  const segmentId = formData.get('segmentId')
+
+  // 🚫 bloquear si hay producción
+  const { count } = await supabase
+    .from('daily_entries')
+    .select('*', { count: 'exact', head: true })
+    .eq('segment_id', segmentId)
+
+  if (count && count > 0) {
+    throw new Error('Cannot delete segment with production.')
+  }
+
+  await supabase
+    .from('project_segments')
+    .delete()
+    .eq('id', segmentId)
+
+    revalidatePath(`/projects/${formData.get('projectId')}`)
 }
 
 async function assignCrewToSegment(formData: FormData) {
@@ -116,10 +161,14 @@ async function createDailyEntry(formData: FormData) {
 
 export default async function ProjectPage({
   params,
+  searchParams
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ segmentError?: string }>
 }) {
   const { id } = await params
+  const resolvedSearchParams = await searchParams
+const segmentError = resolvedSearchParams.segmentError
 
   // ================================
   // QUERIES
@@ -584,11 +633,31 @@ const totalLoggedFootage = crewLoggedFootage + subcontractorLoggedFootage
                 >
                   <div className="grid gap-5 xl:grid-cols-[1.2fr_0.8fr]">
                     <div>
-                      <div className="mb-4 flex flex-wrap items-center gap-3">
-                        <h3 className="text-lg font-semibold text-white">{segment.name}</h3>
-                        <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-200">
-                          {segment.color || 'No Color'}
-                        </span>
+                      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <h3 className="text-lg font-semibold text-white">{segment.name}</h3>
+
+                          <span className="rounded-full border border-cyan-400/20 bg-cyan-400/10 px-3 py-1 text-xs font-semibold text-cyan-200">
+                            {segment.color || 'No Color'}
+                          </span>
+                        </div>
+
+                        <div className="flex gap-2">
+                          {/* EDIT */}
+                          <Link
+                            href={`/projects/${id}/segments/${segment.id}/edit`}
+                            className="text-xs px-3 py-1 rounded bg-white/10 hover:bg-white/20 text-white"
+                          >
+                            Edit
+                          </Link>
+
+                          {/* DELETE */}
+                          <DeleteSegmentButton
+                            segmentId={segment.id}
+                            projectId={id}
+                            action={deleteSegment}
+                          />
+                        </div>
                       </div>
 
                       <div className="grid gap-3 text-sm text-white/75 sm:grid-cols-2 xl:grid-cols-4">
@@ -764,7 +833,11 @@ const totalLoggedFootage = crewLoggedFootage + subcontractorLoggedFootage
           <p className="mt-1 text-sm text-white/45">
             Add a segment for internal production tracking.
           </p>
-
+          {segmentError === 'duplicate' && (
+  <div className="rounded-2xl border border-red-400/20 bg-red-500/10 p-4 text-sm text-red-200">
+    A segment with this name already exists for this project.
+  </div>
+)}
           <form action={createSegment} className="mt-5 grid gap-4 md:grid-cols-4">
             <input type="hidden" name="project_id" value={id} />
 
